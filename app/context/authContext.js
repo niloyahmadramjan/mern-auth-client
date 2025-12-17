@@ -1,3 +1,4 @@
+'use client'
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -16,7 +17,7 @@ export const AuthProvider = ({ Children }) => {
       setUser(data.user);
       setIsAuth(true);
     } catch (error) {
-      console.log(error.response.error.message);
+      console.log(error);
     }finally{
         setLoading(false)
     }
