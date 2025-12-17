@@ -1,6 +1,6 @@
 'use client'
-import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
+import api from "../hook/apiIntercepter";
 
 const AuthContext = createContext(null);
 
@@ -11,9 +11,7 @@ export const AuthProvider = ({ Children }) => {
 
   async function fetchUser() {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/v1/me", {
-        withCredentials: true,
-      });
+      const { data } = await api.get("/api/v1/me");
       setUser(data.user);
       setIsAuth(true);
     } catch (error) {
