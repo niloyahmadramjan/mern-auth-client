@@ -2,15 +2,11 @@ import axios from "axios";
 
 const server = process.env.BACKEND_URL || "http://localhost:5000";
 
-const getCookie = (name) => {
-  const value = `;${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-
-  // if (parts === 2) return parts.pop().split(";").shift();
-  if (parts.length === 2) {
-    return parts.pop().split(";").shift();
-  }
-};
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
 const api = axios.create({
   baseURL: server,
@@ -19,7 +15,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    if (["post", "put", "delete"].includes(config.method)) {
+    if (["post", "put","fetch", "delete"].includes(config.method)) {
       const csrfToken = getCookie("csrfToken");
       if (csrfToken) {
         config.headers["x-csrf-token"] = csrfToken;
