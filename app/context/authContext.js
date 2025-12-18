@@ -1,36 +1,56 @@
-'use client'
+"use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../hook/apiIntercepter";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ Children }) => {
+export const AuthProvider = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
-  const [loding, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
 
-  async function fetchUser() {
+  const fetchUser = async () => {
     try {
       const { data } = await api.get("/api/v1/me");
-      setUser(data.user);
+    
+      setUser(data);
       setIsAuth(true);
-    } catch (error) {
-      console.log(error);
-    }finally{
-        setLoading(false)
+    } catch {
+      setUser(null);
+      setIsAuth(false);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  useEffect(()=>{
-    fetchUser()
-  },[])
+  const logOutUser = async () => {
+    try {
+      await api.post("/api/v1/logout");
+      router.push("/login");
+    } finally {
+      setUser(null);
+      setIsAuth(false);
+      
+    }
+  };
 
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
-return <AuthContext.Provider value={{setIsAuth,isAuth,user,setUser,loding}}>{Children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, isAuth, loading, logOutUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export const AppData = ()=>{
-    const context = useContext(AuthContext)
-    if(!context)throw new Error("ApppData must be used within as AuthProvider")
-        return context
-}
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+};

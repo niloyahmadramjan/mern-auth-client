@@ -48,7 +48,7 @@ export default function VerifyOtpPage() {
       );
 
       toast.success(data.message);
-      router.push("/dashboard");
+      router.push("/");
 
     } catch (error) {
       toast.error(error?.response?.data?.message || "OTP verification failed");
